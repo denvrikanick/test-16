@@ -1,0 +1,80 @@
+import pygame
+import math
+import datetime
+
+# Initialize pygame
+pygame.init()
+
+# Screen dimensions
+SCREEN_WIDTH = 600
+SCREEN_HEIGHT = 600
+
+# Colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+
+# Set up the display
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+pygame.display.set_caption("Analog Clock")
+
+# Clock to control the frame rate
+clock = pygame.time.Clock()
+
+# Center of the clock
+CENTER_X = SCREEN_WIDTH // 2
+CENTER_Y = SCREEN_HEIGHT // 2
+
+# Clock radius
+RADIUS = 250
+
+# Function to draw the clock face
+def draw_clock_face():
+    pygame.draw.circle(screen, WHITE, (CENTER_X, CENTER_Y), RADIUS, 3)
+
+    for i in range(12):
+        angle = math.radians(i * 30 - 90)
+        x = CENTER_X + RADIUS * 0.9 * math.cos(angle)
+        y = CENTER_Y + RADIUS * 0.9 * math.sin(angle)
+        pygame.draw.circle(screen, WHITE, (int(x), int(y)), 5)
+
+# Function to draw the clock hands
+def draw_hand(angle, length, color):
+    angle = math.radians(angle - 90)
+    x = CENTER_X + length * math.cos(angle)
+    y = CENTER_Y + length * math.sin(angle)
+    pygame.draw.line(screen, color, (CENTER_X, CENTER_Y), (int(x), int(y)), 3)
+
+# Function to get the current time angles
+def get_time_angles():
+    now = datetime.datetime.now()
+    seconds_angle = now.second * 6
+    minutes_angle = now.minute * 6 + now.second * 0.1
+    hours_angle = (now.hour % 12) * 30 + now.minute * 0.5
+    return hours_angle, minutes_angle, seconds_angle
+
+# Main game loop
+def game_loop():
+    run = True
+    while run:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+
+        screen.fill(BLACK)
+        draw_clock_face()
+
+        hours_angle, minutes_angle, seconds_angle = get_time_angles()
+        draw_hand(hours_angle, RADIUS * 0.5, WHITE)
+        draw_hand(minutes_angle, RADIUS * 0.75, BLUE)
+        draw_hand(seconds_angle, RADIUS * 0.9, RED)
+
+        pygame.display.flip()
+        clock.tick(60)
+
+    pygame.quit()
+
+if __name__ == "__main__":
+    game_loop()
